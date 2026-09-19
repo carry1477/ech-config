@@ -1,0 +1,47 @@
+name: update-clash-ech
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: fetch latest ECH config and render
+        run: |
+          python3 - <<'EOF'
+          import json, urllib.request, re
+          s = urllib.request.urlopen("https://dns.alidns.com/resolve?name=www.euuc.cc.cd&type=65", timeout=15).read().decode()
+          j = json.loads(s)
+          ech = ""
+          for a in j["Answer"]:
+              if a["type"] == 65 and 'ech=' in a["data"]:
+                  m = re.search(r'ech="([^"]+)"', a["data"])
+                  if m:
+                      ech = m.group(1).rstrip("=")
+                      break
+          if not ech:
+              raise SystemExit("failed to get ech")
+          open("clash.yaml", "w").write(open("clash-template.yaml").read().replace("__ECH_CONFIG__", ech))
+          print("rendered ECH:", ech[:24])
+          EOF
+
+      - name: commit and push
+        run: |
+          if git diff --quiet clash.yaml; then
+            echo "no change"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add clash.yaml
+            git commit -m "update ECH config $(date -u +%FT%TZ)"
+            git push
+          fi
