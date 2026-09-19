@@ -1,0 +1,42 @@
+mixed-port: 7897
+allow-lan: false
+mode: rule
+log-level: info
+external-controller: 127.0.0.1:9090
+
+dns:
+  enable: true
+  enhanced-mode: fake-ip
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - 1.1.1.1
+
+proxies:
+  - name: "VPS-ECH"
+    type: vless
+    server: www.euuc.cc.cd
+    port: 443
+    uuid: ad125321-ba73-4430-840a-7804b343eba6
+    tls: true
+    udp: true
+    servername: www.euuc.cc.cd
+    network: ws
+    ws-opts:
+      path: /ray
+      headers:
+        Host: www.euuc.cc.cd
+    ech-opts:
+      enable: true
+      config: "__ECH_CONFIG__"
+    skip-cert-verify: false
+
+proxy-groups:
+  - name: "GLOBAL"
+    type: select
+    proxies:
+      - VPS-ECH
+      - DIRECT
+
+rules:
+  - MATCH,GLOBAL
