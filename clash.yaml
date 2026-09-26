@@ -28,7 +28,7 @@ proxies:
         Host: www.euuc.cc.cd
     ech-opts:
       enable: true
-      config: "AEX+DQBBmQAgACBoUSoQTwigZwKqBA2FBkmo632cV+e0mnjSjLMnzP6kcQAEAAEAAQASY2xvdWRmbGFyZS1lY2guY29tAAA"
+      config: "AEX+DQBBRwAgACAXibnTNV1ZwX2Mk7Vy2bhEV/DYLw74H3mlNyC7Wkf6VAAEAAEAAQASY2xvdWRmbGFyZS1lY2guY29tAAA"
     skip-cert-verify: false
 
 proxy-groups:
